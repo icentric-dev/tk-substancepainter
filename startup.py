@@ -72,41 +72,26 @@ def to_new_version_system(version):
 
 
 # adapted from:
-# https://stackoverflow.com/questions/2270345/finding-the-version-of-an-application-from-python
+# https://helpx.adobe.com/substance-3d-painter/pipeline-and-integration/configuration/querying-current-software-version.html
 def get_file_info(filename, info):
-    """
-    Extract information from a file.
-    """
-    import array
-    from ctypes import windll, create_string_buffer, c_uint, string_at, byref
+    """ 
+    Read all properties of the given file return them as a dictionary. 
+    """ 
+    import win32api
 
-    # Get size needed for buffer (0 if no info)
-    size = windll.version.GetFileVersionInfoSizeA(filename, None)
-    # If no info in file -> empty string
-    if not size:
-        return ""
+    try:
+        # VarFileInfoTranslation returns list of available (language, codepage) 
+        # pairs that can be used to retreive string info. We are using only the first pair. 
+        lang, codepage = win32api.GetFileVersionInfo(filename, '\VarFileInfo\Translation')[0] 
 
-    # Create buffer
-    res = create_string_buffer(size)
-    # Load file informations into buffer res
-    windll.version.GetFileVersionInfoA(filename, None, size, res)
-    r = c_uint()
-    l = c_uint()
-    # Look for codepages
-    windll.version.VerQueryValueA(res, "\\VarFileInfo\\Translation", byref(r), byref(l))
-    # If no codepage -> empty string
-    if not l.value:
-        return ""
+        # any other must be of the form StringfileInfo%04X%04Xparm_name, middle 
+        # two are language/codepage pair returned from above 
+        strInfoPath = u'\StringFileInfo\%04X%04X\%s' % (lang, codepage, info) 
+        version = win32api.GetFileVersionInfo(filename, strInfoPath)
+    except: 
+        pass 
 
-    # Take the first codepage (what else ?)
-    codepages = array.array("H", string_at(r.value, l.value))
-    codepage = tuple(codepages[:2].tolist())
-
-    # Extract information
-    windll.version.VerQueryValueA(
-        res, ("\\StringFileInfo\\%04x%04x\\" + info) % codepage, byref(r), byref(l)
-    )
-    return string_at(r.value, l.value)
+    return version
 
 
 def md5(fname):
