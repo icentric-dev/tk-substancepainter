@@ -245,6 +245,13 @@ class EngineClient(Client):
         result = self.send_and_receive("EXTRACT_THUMBNAIL", path=filename)
         return result
 
+    def import_mesh(self, filename):
+        result = self.send_and_receive(
+            'IMPORT_MESH',
+            meshFile=filename,
+        )        
+        return result
+
     def import_project_resource(self, filename, usage, destination):
         result = self.send_and_receive(
             "IMPORT_PROJECT_RESOURCE",

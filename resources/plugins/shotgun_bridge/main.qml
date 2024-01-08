@@ -400,6 +400,14 @@ PainterPlugin
     return false;
   }
 
+  function importMesh(data)
+  { 
+    var url = alg.fileIO.localFileToUrl(data.meshFile);
+    var result = alg.project.create(url);
+
+    return result
+  }
+
   function importProjectResource(data)
   {
     try
@@ -509,6 +517,7 @@ PainterPlugin
       registerCallback("NEEDS_SAVING", needsSavingProject);
       registerCallback("CLOSE_PROJECT", closeProject);
       registerCallback("EXECUTE_STATEMENT", executeStatement);
+      registerCallback("IMPORT_MESH", importMesh);
       registerCallback("IMPORT_PROJECT_RESOURCE", importProjectResource);
       registerCallback("GET_PROJECT_SETTINGS", getProjectSettings);
       registerCallback("GET_RESOURCE_INFO", getResourceInfo);

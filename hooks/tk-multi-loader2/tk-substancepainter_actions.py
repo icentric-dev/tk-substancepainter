@@ -57,6 +57,8 @@ publishedfile_type_to_actions = {
     ],
     "Substance Smart Mask": ["smartmask"],
     "Spmsk File": ["smartmask"],
+    "Obj File": ["create"],
+    "Maya FBX": ["create"],
 }
 
 
@@ -128,17 +130,30 @@ class SubstancePainterActions(HookBaseClass):
 
         if available_actions:
             for action in available_actions:
-                action_instances.append(
-                    {
-                        "name": "Import Project Resource as %s" % action,
-                        "params": action,
-                        "caption": "Import Project Resource as %s" % action,
-                        "description": (
-                            "This will import the %s as %s inside the current project."
-                            % (published_file_type, action)
-                        ),
-                    }
-                )
+                if action == 'create':
+                    action_instances.append(
+                        {
+                            "name": "Import Mesh File",
+                            "params": action,
+                            "caption": "Import Mesh File",
+                            "description": (
+                                "This will import the %s."
+                                % (published_file_type)
+                            ),
+                        }
+                    )
+                else:
+                    action_instances.append(
+                        {
+                            "name": "Import Project Resource as %s" % action,
+                            "params": action,
+                            "caption": "Import Project Resource as %s" % action,
+                            "description": (
+                                "This will import the %s as %s inside the current project."
+                                % (published_file_type, action)
+                            ),
+                        }
+                    )
 
         return action_instances
 
@@ -203,4 +218,7 @@ class SubstancePainterActions(HookBaseClass):
 
         usage = params
         engine = sgtk.platform.current_engine()
-        result = engine.app.import_project_resource(path, usage, "Shotgun")
+        if "create" == params:
+            result = engine.app.import_mesh(path)
+        else:
+            result = engine.app.import_project_resource(path, usage, "Shotgun")
