@@ -59,6 +59,7 @@ publishedfile_type_to_actions = {
     "Spmsk File": ["smartmask"],
     "Obj File": ["create"],
     "Maya FBX": ["create"],
+    "Alembic Cache": ["create"],
 }
 
 
@@ -133,12 +134,12 @@ class SubstancePainterActions(HookBaseClass):
                 if action == 'create':
                     action_instances.append(
                         {
-                            "name": "Import Mesh File",
+                            "name": "Import %s" % published_file_type,
                             "params": action,
-                            "caption": "Import Mesh File",
+                            "caption": "Import %s" % published_file_type,
                             "description": (
                                 "This will import the %s."
-                                % (published_file_type)
+                                % published_file_type
                             ),
                         }
                     )
